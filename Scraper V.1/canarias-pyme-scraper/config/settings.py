@@ -18,7 +18,7 @@ class ScrapingConfig:
         "LOG_LEVEL": "INFO",
         "MAX_RETRIES": 3,
         "REQUEST_TIMEOUT": 30,
-        "DELAY_BETWEEN_REQUESTS": 2,
+        "REQUEST_DELAY ": 2,
         "MAX_DOCUMENTS_PER_INSTITUTION": 50,
         "ENABLE_DEDUPLICATION": True,
         "RESPECT_ROBOTS_TXT": True

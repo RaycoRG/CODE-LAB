@@ -121,4 +121,195 @@ class BaseScraper(ABC):
                 **kwargs
             }
             
-            # Realizar
+            # Realizar petición
+            if method.upper() == 'GET':
+                response = self.session.get(url, **request_params)
+            elif method.upper() == 'POST':
+                response = self.session.post(url, **request_params)
+            else:
+                response = self.session.request(method, url, **request_params)
+            
+            # Verificar código de estado
+            response.raise_for_status()
+            
+            # Log de respuesta exitosa
+            self.logger.debug(f"Petición exitosa: {url} - Status: {response.status_code}")
+            
+            # Respetar rate limiting
+            time.sleep(self.scraping_config.REQUEST_DELAY)
+            
+            return response
+            
+        except requests.exceptions.Timeout:
+            self.logger.warning(f"Timeout en petición: {url}")
+            raise
+        except requests.exceptions.ConnectionError:
+            self.logger.warning(f"Error de conexión: {url}")
+            raise
+        except requests.exceptions.HTTPError as e:
+            self.logger.warning(f"Error HTTP {e.response.status_code}: {url}")
+            if e.response.status_code == 429:  # Too Many Requests
+                time.sleep(self.scraping_config.RATE_LIMIT_DELAY)
+            raise
+        except Exception as e:
+            self.logger.error(f"Error inesperado en petición {url}: {str(e)}")
+            raise
+    
+    def _parse_html(self, html_content: str) -> BeautifulSoup:
+        """Parsea contenido HTML con BeautifulSoup"""
+        try:
+            soup = BeautifulSoup(html_content, 'html.parser')
+            return soup
+        except Exception as e:
+            self.logger.error(f"Error parseando HTML: {str(e)}")
+            raise
+    
+    def _extract_document_info(self, link, base_url: str) -> Optional[Dict]:
+        """Extrae información de un enlace a documento"""
+        try:
+            href = link.get('href', '')
+            if not href:
+                return None
+            
+            # Resolver URL completa
+            full_url = self._resolve_url(href, base_url)
+            
+            # Verificar si es un documento válido
+            if not self._is_valid_document_url(full_url):
+                return None
+            
+            # Extraer información del enlace
+            title = link.get_text(strip=True)
+            if not title:
+                title = link.get('title', '')
+            
+            # Información adicional
+            doc_info = {
+                'url': full_url,
+                'title': title,
+                'source_url': base_url,
+                'institution': self.__class__.__name__.replace('Scraper', ''),
+                'scraped_at': time.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            # Intentar extraer tipo de documento de la URL
+            doc_type = self._extract_document_type(full_url)
+            if doc_type:
+                doc_info['document_type'] = doc_type
+            
+            return doc_info
+            
+        except Exception as e:
+            self.logger.debug(f"Error extrayendo info de documento: {str(e)}")
+            return None
+    
+    def _is_valid_document_url(self, url: str) -> bool:
+        """Verifica si una URL corresponde a un documento válido"""
+        try:
+            # Extensiones de documentos válidos
+            valid_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']
+            
+            url_lower = url.lower()
+            
+            # Verificar extensión
+            if any(url_lower.endswith(ext) for ext in valid_extensions):
+                return True
+            
+            # Verificar patrones en la URL
+            doc_patterns = ['documento', 'formulario', 'modelo', 'impreso', 'download']
+            if any(pattern in url_lower for pattern in doc_patterns):
+                return True
+            
+            return False
+            
+        except Exception:
+            return False
+    
+    def _extract_document_type(self, url: str) -> Optional[str]:
+        """Extrae el tipo de documento de la URL"""
+        try:
+            url_lower = url.lower()
+            
+            if '.pdf' in url_lower:
+                return 'PDF'
+            elif any(ext in url_lower for ext in ['.doc', '.docx']):
+                return 'Word'
+            elif any(ext in url_lower for ext in ['.xls', '.xlsx']):
+                return 'Excel'
+            elif any(ext in url_lower for ext in ['.ppt', '.pptx']):
+                return 'PowerPoint'
+            
+            return None
+            
+        except Exception:
+            return None
+    
+    def _resolve_url(self, href: str, base_url: str) -> str:
+        """Resuelve URL relativa a absoluta"""
+        try:
+            return urljoin(base_url, href)
+        except Exception as e:
+            self.logger.debug(f"Error resolviendo URL {href}: {str(e)}")
+            return href
+    
+    def _filter_documents_by_type(self, documents: List[Dict], doc_types: Optional[List[str]]) -> List[Dict]:
+        """Filtra documentos por tipo si se especifica"""
+        if not doc_types:
+            return documents
+        
+        filtered = []
+        for doc in documents:
+            doc_type = doc.get('document_type', '').lower()
+            if any(dt.lower() in doc_type for dt in doc_types):
+                filtered.append(doc)
+        
+        return filtered
+    
+    def _deduplicate_documents(self, documents: List[Dict]) -> List[Dict]:
+        """Elimina documentos duplicados basándose en URL"""
+        seen_urls = set()
+        unique_docs = []
+        
+        for doc in documents:
+            url = doc.get('url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                unique_docs.append(doc)
+        
+        return unique_docs
+    
+    def validate_config(self) -> bool:
+        """Valida la configuración del scraper"""
+        try:
+            # Verificar URL base
+            if not self.base_url:
+                self.logger.error("URL base no especificada")
+                return False
+            
+            # Verificar que la URL es válida
+            parsed = urlparse(self.base_url)
+            if not parsed.scheme or not parsed.netloc:
+                self.logger.error(f"URL base inválida: {self.base_url}")
+                return False
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error validando configuración: {str(e)}")
+            return False
+    
+    @abstractmethod
+    def scrape_documents(self, doc_types: Optional[List[str]] = None) -> List[Dict]:
+        """Método abstracto que debe implementar cada scraper específico"""
+        pass
+    
+    def __enter__(self):
+        """Contexto manager - entrada"""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Contexto manager - salida"""
+        try:
+            self.session.close()
+        except Exception:
+            pass
