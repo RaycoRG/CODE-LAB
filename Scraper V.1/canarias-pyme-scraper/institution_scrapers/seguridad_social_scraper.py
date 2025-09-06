@@ -33,9 +33,9 @@ class SeguridadSocialScraper(BaseScraper):
         try:
             # Construir URLs específicas para cada área
             area_urls = {
-                'autonomos': f"{self.base_url}/autonomos/",
-                'empresas': f"{self.base_url}/empresas/",
-                'cotizacion': f"{self.base_url}/cotizacion/"
+                'autonomos': f"{self.base_url.rstrip('/')}/autonomos/",
+                'empresas': f"{self.base_url.rstrip('/')}/empresas/",
+                'cotizacion': f"{self.base_url.rstrip('/')}/cotizacion/"
             }
             
             area_url = area_urls.get(area, self.base_url)

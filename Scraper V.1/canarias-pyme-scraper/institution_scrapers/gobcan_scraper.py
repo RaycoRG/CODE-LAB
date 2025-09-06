@@ -19,7 +19,7 @@ class GobcanScraper(BaseScraper):
                 self.logger.info(f"Procesando área: {area}")
                 
                 # Construir URL del área
-                area_url = f"{self.base_url}{area}/"
+                area_url = f"{self.base_url.rstrip('/')}/{area.lstrip('/')}/"
                 area_docs = self._scrape_area(area_url, area)
                 documents.extend(area_docs)
                 
