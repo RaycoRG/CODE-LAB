@@ -18,7 +18,7 @@ def with_retry(max_retries: int = 3, delay: float = 1, backoff: float = 2):
                     
                 except Exception as e:
                     if attempt == max_retries:
-                        logger.error(f"❌ Falló después de {max_retries} intentos: {str(e)}")
+                        logger.error(f"Falló después de {max_retries} intentos: {str(e)}")
                         raise
                     
                     wait_time = delay * (backoff ** attempt)
