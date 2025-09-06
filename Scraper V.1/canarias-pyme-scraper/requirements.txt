@@ -1,10 +1,60 @@
+# Dependencias principales para el scraper PYME Canarias
+# Versiones actualizadas y compatibles con Python 3.11+
+
+# Web scraping y parsing
 beautifulsoup4==4.12.2
 requests==2.31.0
-scrapy==2.11.0
 lxml==4.9.3
+html5lib==1.1
+
+# Manejo de fechas y texto
 python-dateutil==2.8.2
-nltk==3.8.1
+python-slugify==8.0.1
+
+# Detección de idioma y encoding
+chardet==5.2.0
+langdetect==1.0.9
+
+# User agents falsos
 fake-useragent==1.4.0
+
+# Utilidades de red
 urllib3==2.0.7
+certifi==2023.11.17
+
+# Progress bars y UI
 tqdm==4.66.1
+rich==13.7.0
+
+# Colores en consola
 colorama==0.4.6
+
+# Manejo de archivos
+pathlib2==2.3.7
+
+# Validación de datos
+jsonschema==4.20.0
+
+# Caching opcional
+diskcache==5.6.3
+
+# Logging estructurado
+structlog==23.2.0
+
+# Configuración avanzada
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Testing (desarrollo)
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Calidad de código (desarrollo)
+black==23.12.0
+flake8==6.1.0
+mypy==1.8.0
+
+# Documentación (desarrollo)
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
