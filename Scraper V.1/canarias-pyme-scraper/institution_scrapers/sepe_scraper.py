@@ -1,203 +1,341 @@
-# institution_scrapers/sepe_scraper.py - Scraper para SEPE Canarias
+# institution_scrapers/sepe_scraper.py - VERSIÓN MEJORADA
 from typing import List, Dict, Optional
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
+import re
 
 
 class SepeScraper(BaseScraper):
-    """Scraper específico para SEPE - Canarias"""
+    """Scraper específico para SEPE - Canarias - VERSIÓN MEJORADA"""
     
     def scrape_documents(self, doc_types: Optional[List[str]] = None) -> List[Dict]:
         """Scrapea documentos del SEPE relacionados con empresas"""
         documents = []
         
         try:
-            # Áreas específicas del SEPE
-            sepe_areas = [
-                "empresas/prestaciones-por-desempleo",
-                "empresas/contratos-de-trabajo", 
-                "empresas/bonificaciones-y-reducciones",
-                "trabajadores/prestaciones"
-            ]
+            self.logger.info("Iniciando scraping de SEPE")
             
-            for area in sepe_areas:
-                self.logger.info(f"Procesando área SEPE: {area}")
-                area_docs = self._scrape_sepe_area(area)
-                documents.extend(area_docs)
-                
+            # Verificar configuración
+            if not self.validate_config():
+                self.logger.error("Configuración inválida para SEPE")
+                return documents
+            
+            # Estrategia múltiple
+            documents.extend(self._scrape_main_sepe_page())
+            documents.extend(self._scrape_sepe_areas())
+            documents.extend(self._scrape_sepe_forms_section())
+            
+            # Filtrar por tipo si se especifica
+            if doc_types:
+                documents = self._filter_documents_by_type(documents, doc_types)
+            
+            # Deduplicar
+            documents = self._deduplicate_documents(documents)
+            
         except Exception as e:
             self.logger.error(f"Error scrapeando SEPE: {str(e)}")
-        
-        # Filtrar y deduplicar
-        documents = self._filter_documents_by_type(documents, doc_types)
-        documents = self._deduplicate_documents(documents)
         
         self.logger.info(f"SEPE: {len(documents)} documentos encontrados")
         return documents
     
-    def _scrape_sepe_area(self, area: str) -> List[Dict]:
-        """Scrapea un área específica del SEPE"""
+    def _scrape_main_sepe_page(self) -> List[Dict]:
+        """Scrapea la página principal del SEPE"""
         documents = []
         
         try:
-            area_url = f"{self.base_url.rstrip('/')}/{area.strip('/')}/"
+            self.logger.info("Scrapeando página principal de SEPE")
             
-            response = self._make_request(area_url)
-            if not response:
-                return documents
+            # URLs principales del SEPE que funcionan
+            main_urls = [
+                "https://www.sepe.es/",
+                "https://www.sepe.es/HomeSepe/",
+                "https://sede.sepe.gob.es/"
+            ]
             
-            soup = self._parse_html(response.text)
-            
-            # Buscar enlaces a documentos
-            doc_links = soup.find_all('a', href=True)
-            for link in doc_links:
-                # Filtrar solo enlaces que parezcan documentos
-                href = link.get('href', '')
-                text = link.get_text(strip=True).lower()
-                
-                # Keywords específicas del SEPE
-                sepe_keywords = [
-                    'modelo', 'formulario', 'solicitud', 'certificado',
-                    'documento', 'impreso', 'guia', 'manual'
-                ]
-                
-                if any(keyword in text or keyword in href.lower() 
-                      for keyword in sepe_keywords):
-                    doc_info = self._extract_document_info(link, area_url)
-                    if doc_info:
-                        documents.append(doc_info)
+            for url in main_urls:
+                try:
+                    response = self._make_request(url)
+                    if response:
+                        soup = self._parse_html(response.text)
+                        page_docs = self._extract_sepe_documents(soup, url)
+                        documents.extend(page_docs)
                         
-        except Exception as e:
-            self.logger.warning(f"Error en área SEPE {area}: {str(e)}")
-        
-        return documents
-    
-    def _get_document_links(self, soup: BeautifulSoup, base_url: str) -> List[Dict]:
-        """Extrae enlaces a documentos del SEPE"""
-        documents = []
-        
-        # Buscar en secciones específicas
-        doc_sections = soup.find_all(['div', 'section'], class_=lambda x: x and any(
-            term in str(x).lower() for term in ['documento', 'descarga', 'archivo']
-        ))
-        
-        for section in doc_sections:
-            for link in section.find_all('a', href=True):
-                doc_info = self._extract_document_info(link, base_url)
-                if doc_info:
-                    documents.append(doc_info)
-        
-        return documents
-
-
-# institution_scrapers/camara_comercio_scraper.py - Scraper para Cámaras de Comercio
-from typing import List, Dict, Optional
-from bs4 import BeautifulSoup
-from .base_scraper import BaseScraper
-
-
-class CamaraComercioScraper(BaseScraper):
-    """Scraper para Cámaras de Comercio de Canarias"""
-    
-    def scrape_documents(self, doc_types: Optional[List[str]] = None) -> List[Dict]:
-        """Scrapea documentos de las Cámaras de Comercio"""
-        documents = []
-        
-        try:
-            # Página principal
-            response = self._make_request(self.base_url)
-            if not response:
-                return documents
+                        # Si encontramos documentos, usamos esta URL como base
+                        if page_docs:
+                            break
+                            
+                except Exception as e:
+                    self.logger.debug(f"Error en URL principal {url}: {str(e)}")
+                    continue
             
-            soup = self._parse_html(response.text)
-            
-            # Buscar secciones empresariales
-            business_sections = self._find_business_sections(soup)
-            
-            for section_url, section_name in business_sections:
-                self.logger.info(f"Procesando sección: {section_name}")
-                section_docs = self._scrape_section(section_url)
-                documents.extend(section_docs)
-                
-            # También documentos de la página principal
-            main_docs = self._get_document_links(soup, self.base_url)
-            documents.extend(main_docs)
+            self.logger.info(f"Documentos en página principal SEPE: {len(documents)}")
             
         except Exception as e:
-            self.logger.error(f"Error scrapeando Cámara de Comercio: {str(e)}")
+            self.logger.warning(f"Error en página principal SEPE: {str(e)}")
         
-        # Filtrar y deduplicar
-        documents = self._filter_documents_by_type(documents, doc_types)
-        documents = self._deduplicate_documents(documents)
-        
-        self.logger.info(f"Cámara de Comercio: {len(documents)} documentos encontrados")
         return documents
     
-    def _find_business_sections(self, soup: BeautifulSoup) -> List[tuple]:
-        """Encuentra secciones relacionadas con empresas y emprendimiento"""
-        sections = []
+    def _scrape_sepe_areas(self) -> List[Dict]:
+        """Scrapea áreas específicas del SEPE con URLs correctas"""
+        documents = []
         
-        # Keywords específicas para Cámaras de Comercio
-        keywords = [
-            'empresa', 'emprendimiento', 'creacion', 'constitucion',
-            'tramite', 'servicios', 'comercio', 'internacional',
-            'exportacion', 'formacion', 'certificado', 'documento'
+        # URLs conocidas que funcionan para SEPE
+        sepe_areas = [
+            {
+                'name': 'Empresarios',
+                'urls': [
+                    'https://www.sepe.es/HomeSepe/empresas.html',
+                    'https://www.sepe.es/HomeSepe/autonomos.html',
+                    'https://www.sepe.es/HomeSepe/empresas.html'
+                ]
+            },
+            {
+                'name': 'Contratos',
+                'urls': [
+                    'https://sede.sepe.gob.es/portalSede/procedimientos-y-servicios/empresas/contratos.html',
+                ]
+            },
+            {
+                'name': 'Prestaciones',
+                'urls': [
+                    'https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones.html',
+                    'https://www.sepe.es/HomeSepe/prestaciones-desempleo;jsessionid=428AAA9B6DF6A227748502D09D7C9E13.lxmaginterpro1a',
+                ]
+            },
+            {
+                'name': 'Bonificaciones',
+                'urls': [
+                    'https://www.sepe.es/HomeSepe/empresas/Contratos-de-trabajo/contrato-indefinido-personas-desempleadas-larga-duracion',
+                    'https://www.sepe.es/HomeSepe/que-es-el-sepe/comunicacion-institucional/publicaciones/publicaciones-oficiales/listado-pub-empleo/bonificaciones-reducciones-contratacion-laboral'
+                ]
+                ]
+            },
+            {
+                'name': 'Formación',
+                'urls': [
+                    'https://www.sepe.es/HomeSepe/formacion-trabajo.html',
+            }
         ]
         
-        # Buscar enlaces en navegación y contenido
-        for link in soup.find_all('a', href=True):
-            text = link.get_text(strip=True).lower()
+        for area in sepe_areas:
+            self.logger.info(f"Procesando área SEPE: {area['name']}")
             
-            if any(keyword in text for keyword in keywords):
-                href = link['href']
-                full_url = self._resolve_url(href, self.base_url)
-                sections.append((full_url, link.get_text(strip=True)))
+            for url in area['urls']:
+                try:
+                    area_docs = self._scrape_sepe_area_url(url, area['name'])
+                    documents.extend(area_docs)
+                    
+                    # Si encontramos documentos, continuamos con otras URLs de esta área
+                    # (no break como en SS, porque SEPE puede tener docs distribuidos)
+                    
+                except Exception as e:
+                    self.logger.debug(f"Error en área {area['name']} - URL {url}: {str(e)}")
+                    continue
         
-        return sections[:10]  # Limitar a 10 secciones principales
+        return documents
     
-    def _scrape_section(self, section_url: str) -> List[Dict]:
-        """Scrapea una sección específica"""
+    def _scrape_sepe_area_url(self, url: str, area_name: str) -> List[Dict]:
+        """Scrapea una URL específica de área SEPE"""
         documents = []
         
         try:
-            response = self._make_request(section_url)
+            self.logger.debug(f"Accediendo a área SEPE: {url}")
+            response = self._make_request(url)
+            
             if not response:
                 return documents
             
             soup = self._parse_html(response.text)
-            documents = self._get_document_links(soup, section_url)
+            documents = self._extract_sepe_documents(soup, url, area_name)
             
-            # Buscar subsecciones
-            subsections = soup.find_all('a', href=True)[:5]  # Limitar subsecciones
-            for subsection_link in subsections:
-                subsection_url = self._resolve_url(subsection_link['href'], section_url)
-                
-                # Evitar loops infinitos
-                if subsection_url != section_url and subsection_url.startswith(self.base_url):
-                    try:
-                        sub_response = self._make_request(subsection_url)
-                        if sub_response:
-                            sub_soup = self._parse_html(sub_response.text)
-                            sub_docs = self._get_document_links(sub_soup, subsection_url)
-                            documents.extend(sub_docs)
-                    except:
-                        pass  # Fallos en subsecciones no son críticos
-                        
+            self.logger.debug(f"Área SEPE {area_name}: {len(documents)} documentos")
+            
         except Exception as e:
-            self.logger.warning(f"Error en sección {section_url}: {str(e)}")
+            self.logger.debug(f"Error procesando área SEPE {area_name}: {str(e)}")
         
         return documents
     
-    def _get_document_links(self, soup: BeautifulSoup, base_url: str) -> List[Dict]:
-        """Extrae enlaces a documentos de la Cámara de Comercio"""
+    def _scrape_sepe_forms_section(self) -> List[Dict]:
+        """Scrapea sección específica de formularios del SEPE"""
         documents = []
         
-        # Buscar enlaces a documentos
-        for link in soup.find_all('a', href=True):
-            doc_info = self._extract_document_info(link, base_url)
-            if doc_info:
-                # Agregar información específica de Cámara de Comercio
-                doc_info['institution_type'] = 'camara_comercio'
-                documents.append(doc_info)
+        try:
+            # URLs específicas de formularios
+            forms_urls = [
+                'https://www.sepe.es/HomeSepe/empresas/informacion-para-empresas.html',
+                'https://sede.sepe.gob.es/portalSede/procedimientos-y-servicios/empresas/proteccion-por-desempleo.html'
+            ]
+            
+            for forms_url in forms_urls:
+                try:
+                    self.logger.info(f"Buscando formularios en: {forms_url}")
+                    response = self._make_request(forms_url)
+                    
+                    if response:
+                        soup = self._parse_html(response.text)
+                        forms_docs = self._extract_sepe_forms(soup, forms_url)
+                        documents.extend(forms_docs)
+                        
+                except Exception as e:
+                    self.logger.debug(f"Error en sección formularios {forms_url}: {str(e)}")
+                    continue
+                    
+        except Exception as e:
+            self.logger.warning(f"Error en sección de formularios: {str(e)}")
         
         return documents
+    
+    def _extract_sepe_documents(self, soup: BeautifulSoup, base_url: str, area_name: str = None) -> List[Dict]:
+        """Extrae documentos específicos del SEPE"""
+        documents = []
+        
+        try:
+            # Buscar contenedores de documentos específicos de SEPE
+            doc_selectors = [
+                # Selectores CSS específicos para SEPE
+                'div.descarga',
+                'div.documento', 
+                'div.archivo',
+                'div.formulario',
+                'div.modelo',
+                'a[href*=".pdf"]',
+                'a[href*=".doc"]',
+                'a[href*="descargar"]',
+                'a[href*="formulario"]',
+                'a[href*="modelo"]'
+            ]
+            
+            found_elements = []
+            for selector in doc_selectors:
+                try:
+                    elements = soup.select(selector)
+                    found_elements.extend(elements)
+                except:
+                    continue
+            
+            # Si no encontramos elementos específicos, buscar todos los enlaces
+            if not found_elements:
+                found_elements = soup.find_all('a', href=True)
+            
+            self.logger.debug(f"Elementos encontrados para análisis: {len(found_elements)}")
+            
+            for element in found_elements:
+                # Si es un enlace, procesarlo directamente
+                if element.name == 'a':
+                    doc_info = self._extract_sepe_document_info(element, base_url, area_name)
+                    if doc_info:
+                        documents.append(doc_info)
+                else:
+                    # Si es un contenedor, buscar enlaces dentro
+                    links = element.find_all('a', href=True)
+                    for link in links:
+                        doc_info = self._extract_sepe_document_info(link, base_url, area_name)
+                        if doc_info:
+                            documents.append(doc_info)
+            
+        except Exception as e:
+            self.logger.debug(f"Error extrayendo documentos SEPE: {str(e)}")
+        
+        return documents
+    
+    def _extract_sepe_forms(self, soup: BeautifulSoup, base_url: str) -> List[Dict]:
+        """Extrae formularios específicos del SEPE"""
+        documents = []
+        
+        try:
+            # Buscar tablas de formularios (común en SEPE)
+            tables = soup.find_all('table')
+            for table in tables:
+                rows = table.find_all('tr')
+                for row in rows:
+                    cells = row.find_all(['td', 'th'])
+                    for cell in cells:
+                        links = cell.find_all('a', href=True)
+                        for link in links:
+                            doc_info = self._extract_sepe_document_info(link, base_url, 'Formularios')
+                            if doc_info:
+                                documents.append(doc_info)
+            
+            # También buscar listas de formularios
+            lists = soup.find_all(['ul', 'ol'])
+            for list_elem in lists:
+                items = list_elem.find_all('li')
+                for item in items:
+                    links = item.find_all('a', href=True)
+                    for link in links:
+                        doc_info = self._extract_sepe_document_info(link, base_url, 'Formularios')
+                        if doc_info:
+                            documents.append(doc_info)
+                            
+        except Exception as e:
+            self.logger.debug(f"Error extrayendo formularios SEPE: {str(e)}")
+        
+        return documents
+    
+    def _extract_sepe_document_info(self, link, base_url: str, area_name: str = None) -> Optional[Dict]:
+        """Extrae información específica de documentos SEPE"""
+        try:
+            href = link.get('href', '')
+            text = link.get_text(strip=True).lower()
+            
+            # Filtros específicos para SEPE
+            sepe_keywords = [
+                'modelo', 'formulario', 'solicitud', 'impreso',
+                'certificado', 'documento', 'guia', 'manual',
+                'contrato', 'prestacion', 'desempleo', 'bonificacion',
+                'subvencion', 'ayuda', 'formacion', 'curso'
+            ]
+            
+            # Verificar relevancia
+            is_relevant = (
+                any(keyword in text for keyword in sepe_keywords) or
+                any(keyword in href.lower() for keyword in sepe_keywords) or
+                self._is_valid_document_url(href) or
+                # Patrones específicos de códigos SEPE
+                re.search(r'(ex-\d+|mod\.\s*\d+|modelo\s*\d+)', text, re.I)
+            )
+            
+            if not is_relevant:
+                return None
+            
+            # Usar método base para extracción básica
+            doc_info = super()._extract_document_info(link, base_url)
+            if not doc_info:
+                return None
+            
+            # Enriquecimientos específicos para SEPE
+            if area_name:
+                doc_info['area'] = area_name
+            
+            # Detectar tipo de trámite SEPE
+            if any(word in text for word in ['contrato', 'contratos']):
+                doc_info['tramite_type'] = 'Contratos de Trabajo'
+            elif any(word in text for word in ['prestacion', 'desempleo', 'paro']):
+                doc_info['tramite_type'] = 'Prestaciones por Desempleo'
+            elif any(word in text for word in ['bonificacion', 'reduccion', 'incentivo']):
+                doc_info['tramite_type'] = 'Bonificaciones y Reducciones'
+            elif any(word in text for word in ['formacion', 'curso', 'capacitacion']):
+                doc_info['tramite_type'] = 'Formación para el Empleo'
+            elif any(word in text for word in ['subvencion', 'ayuda']):
+                doc_info['tramite_type'] = 'Ayudas y Subvenciones'
+            
+            # Detectar códigos de formulario SEPE
+            code_match = re.search(r'(ex-\d+|mod\.\s*(\d+)|modelo\s*(\d+))', text, re.I)
+            if code_match:
+                doc_info['form_code'] = code_match.group(0)
+            
+            # Audiencia objetivo
+            if any(word in text for word in ['empresa', 'empresario', 'empleador']):
+                doc_info['target_audience'] = 'Empresas'
+            elif any(word in text for word in ['trabajador', 'empleado']):
+                doc_info['target_audience'] = 'Trabajadores'
+            elif any(word in text for word in ['autonomo']):
+                doc_info['target_audience'] = 'Autónomos'
+            
+            doc_info['institution_type'] = 'sepe'
+            
+            return doc_info
+            
+        except Exception as e:
+            self.logger.debug(f"Error extrayendo info documento SEPE: {str(e)}")
+            return None

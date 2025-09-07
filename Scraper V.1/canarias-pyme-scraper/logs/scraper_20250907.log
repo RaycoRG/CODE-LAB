@@ -1,0 +1,109 @@
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | main:356 | Configuración del sistema:
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | main:357 |   Directorio de salida: ./documents
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | main:358 |   Nivel de log: INFO
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | main:359 |   Máx. reintentos: 3
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | main:360 |   Timeout: 30s
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | run_scraping:59 | Iniciando sistema de scraping PYME Canarias
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | run_scraping:60 | Configuración: 10 instituciones disponibles
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | run_scraping:65 | Procesando 10 instituciones
+2025-09-07 09:12:05 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: hacienda_canarias
+2025-09-07 09:12:08 | [32mINFO[0m | canarias_scraper.HaciendaCanariasScraper | scrape_documents:26 | Procesando sección: Caja de Depósitos: Constitución de Depósito. Garantías en metálico: Generación/Obtención del Modelo de Ingreso.
+2025-09-07 09:12:11 | [32mINFO[0m | canarias_scraper.HaciendaCanariasScraper | scrape_documents:38 | Hacienda Canarias: 0 documentos encontrados
+2025-09-07 09:12:11 | [32mINFO[0m | canarias_scraper | _process_institution:131 | hacienda_canarias: 0 documentos procesados
+2025-09-07 09:12:11 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: gobcan
+2025-09-07 09:12:11 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: economia
+2025-09-07 09:12:14 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: empleo
+2025-09-07 09:12:18 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: industria
+2025-09-07 09:12:20 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: turismo
+2025-09-07 09:12:22 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:29 | Gobierno de Canarias: 0 documentos encontrados
+2025-09-07 09:12:22 | [32mINFO[0m | canarias_scraper | _process_institution:131 | gobcan: 0 documentos procesados
+2025-09-07 09:12:22 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: seguridad_social
+2025-09-07 09:12:22 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: autonomos
+2025-09-07 09:12:25 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: empresas
+2025-09-07 09:12:25 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:12:25 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:12:26 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:12:26 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:12:28 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:12:28 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 3 falló, reintentando en 4s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:12:32 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:12:32 | [31mERROR[0m | canarias_scraper.retry | wrapper:21 | Falló después de 3 intentos: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:12:32 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _scrape_ss_area:59 | Error en área SS empresas: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:12:32 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: cotizacion
+2025-09-07 09:12:32 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:12:32 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:12:33 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:12:33 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | main:356 | Configuración del sistema:
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | main:357 |   Directorio de salida: ./documents
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | main:358 |   Nivel de log: INFO
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | main:359 |   Máx. reintentos: 3
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | main:360 |   Timeout: 30s
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | run_scraping:59 | Iniciando sistema de scraping PYME Canarias
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | run_scraping:60 | Configuración: 10 instituciones disponibles
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | run_scraping:65 | Procesando 10 instituciones
+2025-09-07 09:15:29 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: hacienda_canarias
+2025-09-07 09:15:32 | [32mINFO[0m | canarias_scraper.HaciendaCanariasScraper | scrape_documents:26 | Procesando sección: Caja de Depósitos: Constitución de Depósito. Garantías en metálico: Generación/Obtención del Modelo de Ingreso.
+2025-09-07 09:15:34 | [32mINFO[0m | canarias_scraper.HaciendaCanariasScraper | scrape_documents:38 | Hacienda Canarias: 0 documentos encontrados
+2025-09-07 09:15:34 | [32mINFO[0m | canarias_scraper | _process_institution:131 | hacienda_canarias: 0 documentos procesados
+2025-09-07 09:15:34 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: gobcan
+2025-09-07 09:15:35 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: economia
+2025-09-07 09:15:37 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: empleo
+2025-09-07 09:15:40 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: industria
+2025-09-07 09:15:43 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:19 | Procesando área: turismo
+2025-09-07 09:15:45 | [32mINFO[0m | canarias_scraper.GobcanScraper | scrape_documents:29 | Gobierno de Canarias: 0 documentos encontrados
+2025-09-07 09:15:45 | [32mINFO[0m | canarias_scraper | _process_institution:131 | gobcan: 0 documentos procesados
+2025-09-07 09:15:45 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: seguridad_social
+2025-09-07 09:15:45 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: autonomos
+2025-09-07 09:15:47 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: empresas
+2025-09-07 09:15:47 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:15:47 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:15:48 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:15:48 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:15:50 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:15:50 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 3 falló, reintentando en 4s: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:15:54 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/empresas/
+2025-09-07 09:15:54 | [31mERROR[0m | canarias_scraper.retry | wrapper:21 | Falló después de 3 intentos: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:15:54 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _scrape_ss_area:59 | Error en área SS empresas: 404 Client Error: Not Found for url: https://www.seg-social.es/empresas/
+2025-09-07 09:15:54 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: cotizacion
+2025-09-07 09:15:55 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:55 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:56 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:56 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:58 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:15:58 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 3 falló, reintentando en 4s: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:16:02 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _make_request:150 | Error HTTP 404: https://www.seg-social.es/cotizacion/
+2025-09-07 09:16:02 | [31mERROR[0m | canarias_scraper.retry | wrapper:21 | Falló después de 3 intentos: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:16:02 | [33mWARNING[0m | canarias_scraper.SeguridadSocialScraper | _scrape_ss_area:59 | Error en área SS cotizacion: 404 Client Error: Not Found for url: https://www.seg-social.es/cotizacion/
+2025-09-07 09:16:02 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:19 | Procesando área SS: afiliacion
+2025-09-07 09:16:04 | [32mINFO[0m | canarias_scraper.SeguridadSocialScraper | scrape_documents:26 | Seguridad Social: 0 documentos encontrados
+2025-09-07 09:16:04 | [32mINFO[0m | canarias_scraper | _process_institution:131 | seguridad_social: 0 documentos procesados
+2025-09-07 09:16:04 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: cabildo_tenerife
+2025-09-07 09:16:07 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Economía, empresas, empleo y turismo
+2025-09-07 09:16:09 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Educación, investigación y desarrollo
+2025-09-07 09:16:12 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Contacto y ayuda
+2025-09-07 09:16:14 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Becas y ayudas
+2025-09-07 09:16:16 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Educación, investigación y desarrollo
+2025-09-07 09:16:19 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Economía, empresas, empleo y turismo
+2025-09-07 09:16:21 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:26 | Procesando: Tus comentarios nos ayudarán a mejorarlo
+2025-09-07 09:16:24 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:33 | Cabildo: 0 documentos encontrados
+2025-09-07 09:16:24 | [32mINFO[0m | canarias_scraper | _process_institution:131 | cabildo_tenerife: 0 documentos procesados
+2025-09-07 09:16:24 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: cabildo_grancanaria
+2025-09-07 09:16:26 | [32mINFO[0m | canarias_scraper.CabildoScraper | scrape_documents:33 | Cabildo: 0 documentos encontrados
+2025-09-07 09:16:26 | [32mINFO[0m | canarias_scraper | _process_institution:131 | cabildo_grancanaria: 0 documentos procesados
+2025-09-07 09:16:26 | [32mINFO[0m | canarias_scraper | _process_institution:101 | Procesando institución: sepe_canarias
+2025-09-07 09:16:26 | [32mINFO[0m | canarias_scraper.SepeScraper | scrape_documents:24 | Procesando área SEPE: empresas/prestaciones-por-desempleo
+2025-09-07 09:16:27 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:27 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:28 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:28 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:30 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:30 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 3 falló, reintentando en 4s: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:34 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:34 | [31mERROR[0m | canarias_scraper.retry | wrapper:21 | Falló después de 3 intentos: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:34 | [33mWARNING[0m | canarias_scraper.SepeScraper | _scrape_sepe_area:71 | Error en área SEPE empresas/prestaciones-por-desempleo: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/prestaciones-por-desempleo/
+2025-09-07 09:16:34 | [32mINFO[0m | canarias_scraper.SepeScraper | scrape_documents:24 | Procesando área SEPE: empresas/contratos-de-trabajo
+2025-09-07 09:16:34 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/contratos-de-trabajo/
+2025-09-07 09:16:34 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 1 falló, reintentando en 1s: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/contratos-de-trabajo/
+2025-09-07 09:16:36 | [33mWARNING[0m | canarias_scraper.SepeScraper | _make_request:150 | Error HTTP 404: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/contratos-de-trabajo/
+2025-09-07 09:16:36 | [33mWARNING[0m | canarias_scraper.retry | wrapper:25 | Intento 2 falló, reintentando en 2s: 404 Client Error: 404 for url: https://www.sepe.es/HomeSepe/Personas/distributiva-prestaciones/donde-y-como-solicitar-prestacion/empresas/contratos-de-trabajo/
